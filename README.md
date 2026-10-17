@@ -1,9 +1,16 @@
 # claude-portable — set up Claude Code the way vuntm works
 
-This folder copies the user's Claude Code workflow onto a new machine
+This repo copies the user's Claude Code workflow onto a new machine
 (Windows with Git Bash, or Linux; macOS works too). If you are an agent
 setting it up: follow the steps in order, **ask before overwriting anything
 that already exists**, and report what you installed and what you skipped.
+
+Get it first (the commands below run from inside it):
+
+```bash
+git clone https://github.com/vuntmntdvn-hue/cloude.git ~/claude-portable
+cd ~/claude-portable
+```
 
 ## What's here and where it goes
 
@@ -12,6 +19,7 @@ that already exists**, and report what you installed and what you skipped.
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | Global instructions: how the user works (propose → "do it" → edit → report; no unasked commits or builds; tests; subagents; UI and backend habits). |
 | `skills/low-priority-build/` | `~/.claude/skills/low-priority-build/` | A skill that runs long builds at low priority with capped Gradle workers, so the machine stays usable. `CLAUDE.md` refers to it. |
 | `settings.hooks.json` | merged into `~/.claude/settings.json` | One hook, plus two preferences (below). |
+| — | pub's global bin | **build_ntd**, the user's own Flutter build CLI. Not in this repo; installed from its own (step 6). |
 
 `~` is the user's home folder: `C:\Users\<name>` on Windows (Git Bash shows it
 as `/c/Users/<name>`), `/home/<name>` on Linux.
@@ -70,7 +78,7 @@ cp settings.json settings.json.bak
 jq -s '.[0] as $a | .[1] as $b
        | $a * ($b | del(.hooks))
        | .hooks.PreToolUse = (($a.hooks.PreToolUse // []) + $b.hooks.PreToolUse)' \
-   settings.json /path/to/claude-portable/settings.hooks.json > settings.new \
+   settings.json ~/claude-portable/settings.hooks.json > settings.new \
   && mv settings.new settings.json
 ```
 
@@ -101,6 +109,40 @@ twice. Check that `.hooks.PreToolUse` holds one `"matcher": "Agent"` entry.
   or one build at a time.
 - **TODO tag:** `CLAUDE.md` tags new TODOs `TODO(vuntm)`. Keep it if the same
   person uses this machine.
+
+## 6. build_ntd (optional — for Flutter Android builds)
+
+[build_ntd](https://github.com/vuntmntdvn-hue/build_ntd) wraps
+`flutter build apk/appbundle`: it names the artifact from a template
+(`App941_short_drama_v1.0.0(1)_2026.10.17_14.30_dev_release.apk`), logs each
+build with its commit and branch in `build_ntd_records.md`, and has `bump`,
+`install` (adb) and `doctor` commands. The low-priority-build skill uses it
+for any project whose `pubspec.yaml` has a `build_ntd:` section.
+
+It needs the Dart SDK (comes with Flutter). Install from a clone, so a
+private repo works with the machine's normal git sign-in:
+
+```bash
+git clone https://github.com/vuntmntdvn-hue/build_ntd.git ~/Repos/build_ntd
+dart pub global activate --source=path ~/Repos/build_ntd
+```
+
+Then put pub's global bin folder on `PATH` if it isn't:
+
+- Windows: `%LOCALAPPDATA%\Pub\Cache\bin` (user PATH; open a new shell). Pub
+  writes `build_ntd.bat` there — Git Bash can't run it by name, but `cmd`,
+  which the build script goes through on Windows, can.
+- Linux / macOS: `export PATH="$PATH:$HOME/.pub-cache/bin"` in `~/.bashrc`
+  (or your shell's rc file).
+
+Check it: `build_ntd --help` (Windows: `cmd //c build_ntd --help` from Git
+Bash), then `build_ntd doctor` from a project with a `build_ntd:` section.
+An update is `git pull` in the clone — a path activation runs the source as
+it is; run the `activate` line again only when its `pubspec.yaml` changed.
+
+Optional extras it uses when present: `adb` on `PATH` for `build_ntd install`;
+on Linux `wl-copy` or `xclip` for its clipboard copy (agent builds pass
+`--no-copy` anyway).
 
 ## Not in this kit (on purpose)
 

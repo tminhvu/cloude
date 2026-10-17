@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -c '{hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"ask\",permissionDecisionReason:(\"Subagent \\(.tool_input.subagent_type // \"general-purpose\") on model: \\(.tool_input.model // \"NOT SET (agent default / inherited)\") | \\(.tool_input.description // \"\")\")}}'",
+            "statusMessage": "Confirming subagent model"
+          }
+        ]
+      }
+    ]
+  },
+  "outputStyle": "Explanatory",
+  "effortLevel": "high"
+}

@@ -137,8 +137,10 @@ Then put pub's global bin folder on `PATH` if it isn't:
 
 Check it: `build_ntd --help` (Windows: `cmd //c build_ntd --help` from Git
 Bash), then `build_ntd doctor` from a project with a `build_ntd:` section.
-An update is `git pull` in the clone — a path activation runs the source as
-it is; run the `activate` line again only when its `pubspec.yaml` changed.
+To update: `git pull` in the clone, **then run the `activate` line again**.
+The installed command runs a compiled copy cached in the clone's
+`.dart_tool/pub/bin/`, not the source, so without re-activating it keeps
+running the old code (check with `build_ntd apk --help`).
 
 Optional extras it uses when present: `adb` on `PATH` for `build_ntd install`;
 on Linux `wl-copy` or `xclip` for its clipboard copy (agent builds pass

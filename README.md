@@ -1,4 +1,8 @@
-# claude-portable — set up Claude Code the way vuntm works
+# cloude — portable Claude Code and Codex workflows
+
+This fork supports both Claude Code and Codex. For Codex installation,
+updates, verification, and rollback, see [codex/README.md](codex/README.md).
+The Claude Code setup below remains available independently.
 
 This repo copies the user's Claude Code workflow onto a new machine
 (Windows with Git Bash, or Linux; macOS works too). If you are an agent
@@ -8,7 +12,7 @@ that already exists**, and report what you installed and what you skipped.
 Get it first (the commands below run from inside it):
 
 ```bash
-git clone https://github.com/vuntmntdvn-hue/cloude.git ~/claude-portable
+git clone https://github.com/tminhvu/cloude.git ~/claude-portable
 cd ~/claude-portable
 ```
 
